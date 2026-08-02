@@ -1,11 +1,13 @@
 const WHOOP_AUTH = 'https://api.prod.whoop.com/oauth/oauth2/auth'
 const WHOOP_TOKEN = 'https://api.prod.whoop.com/oauth/oauth2/token'
 const WHOOP_API = 'https://api.prod.whoop.com/developer/v2'
-const STORAGE_KEY = 'forge_whoop_v1'
+const CREDS_KEY = 'forge_whoop_v1'
+const DATA_KEY = 'forge_whoop_data_v1'
 const SCOPES = [
   'read:recovery',
   'read:cycles',
   'read:sleep',
+  'read:workout',
   'read:profile',
   'read:body_measurement',
   'offline',
@@ -20,10 +22,19 @@ export type WhoopCredentials = {
   lastSyncAt?: string
 }
 
+export type WhoopProfile = {
+  user_id: number
+  email?: string
+  first_name?: string
+  last_name?: string
+}
+
 export type WhoopSleep = {
   id: string
   start: string
   end: string
+  nap?: boolean
+  score_state?: string
   score?: {
     stage_summary?: {
       total_in_bed_time_milli?: number
@@ -31,8 +42,18 @@ export type WhoopSleep = {
       total_rem_sleep_time_milli?: number
       total_light_sleep_time_milli?: number
       total_awake_time_milli?: number
+      sleep_cycle_count?: number
+      disturbance_count?: number
     }
+    sleep_needed?: {
+      baseline_milli?: number
+      need_from_sleep_debt_milli?: number
+      need_from_recent_strain_milli?: number
+      need_from_recent_nap_milli?: number
+    }
+    respiratory_rate?: number
     sleep_performance_percentage?: number
+    sleep_consistency_percentage?: number
     sleep_efficiency_percentage?: number
   }
 }
@@ -40,21 +61,64 @@ export type WhoopSleep = {
 export type WhoopRecovery = {
   cycle_id: number
   sleep_id: string
+  user_id?: number
+  created_at?: string
+  updated_at?: string
+  score_state?: string
   score?: {
+    user_calibrating?: boolean
     recovery_score?: number
     resting_heart_rate?: number
     hrv_rmssd_milli?: number
+    spo2_percentage?: number
+    skin_temp_celsius?: number
   }
-  created_at?: string
 }
 
 export type WhoopCycle = {
   id: number
+  user_id?: number
+  created_at?: string
+  updated_at?: string
   start: string
   end: string | null
+  timezone_offset?: string
+  score_state?: string
+  score?: {
+    strain?: number
+    kilojoule?: number
+    average_heart_rate?: number
+    max_heart_rate?: number
+  }
+}
+
+export type WhoopWorkout = {
+  id: string
+  user_id?: number
+  created_at?: string
+  updated_at?: string
+  start: string
+  end: string
+  timezone_offset?: string
+  sport_name?: string
+  sport_id?: number
+  score_state?: string
   score?: {
     strain?: number
     average_heart_rate?: number
+    max_heart_rate?: number
+    kilojoule?: number
+    percent_recorded?: number
+    distance_meter?: number
+    altitude_gain_meter?: number
+    zone_durations?: {
+      zone_zero_milli?: number
+      zone_one_milli?: number
+      zone_two_milli?: number
+      zone_three_milli?: number
+      zone_four_milli?: number
+      zone_five_milli?: number
+    }
   }
 }
 
@@ -62,6 +126,16 @@ export type WhoopBody = {
   height_meter?: number
   weight_kilogram?: number
   max_heart_rate?: number
+}
+
+export type WhoopCache = {
+  syncedAt: string
+  profile: WhoopProfile | null
+  body: WhoopBody | null
+  sleeps: WhoopSleep[]
+  recoveries: WhoopRecovery[]
+  cycles: WhoopCycle[]
+  workouts: WhoopWorkout[]
 }
 
 function envWhoopDefaults(): Pick<WhoopCredentials, 'clientId' | 'clientSecret'> | null {
@@ -74,10 +148,8 @@ function envWhoopDefaults(): Pick<WhoopCredentials, 'clientId' | 'clientSecret'>
 export function loadWhoopCredentials(): WhoopCredentials | null {
   const fromEnv = envWhoopDefaults()
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) {
-      return fromEnv ? { ...fromEnv } : null
-    }
+    const raw = localStorage.getItem(CREDS_KEY)
+    if (!raw) return fromEnv ? { ...fromEnv } : null
     const parsed = JSON.parse(raw) as WhoopCredentials
     const clientId = parsed.clientId || fromEnv?.clientId || ''
     const clientSecret = parsed.clientSecret || fromEnv?.clientSecret || ''
@@ -88,12 +160,27 @@ export function loadWhoopCredentials(): WhoopCredentials | null {
   }
 }
 
-export function saveWhoopCredentials( creds: WhoopCredentials): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(creds))
+export function saveWhoopCredentials(creds: WhoopCredentials): void {
+  localStorage.setItem(CREDS_KEY, JSON.stringify(creds))
 }
 
 export function clearWhoopCredentials(): void {
-  localStorage.removeItem(STORAGE_KEY)
+  localStorage.removeItem(CREDS_KEY)
+  localStorage.removeItem(DATA_KEY)
+}
+
+export function loadWhoopCache(): WhoopCache | null {
+  try {
+    const raw = localStorage.getItem(DATA_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as WhoopCache
+  } catch {
+    return null
+  }
+}
+
+export function saveWhoopCache(cache: WhoopCache): void {
+  localStorage.setItem(DATA_KEY, JSON.stringify(cache))
 }
 
 export function whoopRedirectUri(): string {
@@ -117,20 +204,21 @@ async function postToken(body: Record<string, string>): Promise<{
   refresh_token?: string
   expires_in: number
 }> {
-  // Prefer Vercel serverless proxy (avoids CORS + keeps secret off some paths)
   try {
     const proxyRes = await fetch('/api/whoop-token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
-    if (proxyRes.ok) return (await proxyRes.json()) as {
-      access_token: string
-      refresh_token?: string
-      expires_in: number
+    if (proxyRes.ok) {
+      return (await proxyRes.json()) as {
+        access_token: string
+        refresh_token?: string
+        expires_in: number
+      }
     }
   } catch {
-    // fall through to direct
+    // fall through
   }
 
   const form = new URLSearchParams(body)
@@ -143,7 +231,7 @@ async function postToken(body: Record<string, string>): Promise<{
     const text = await res.text()
     throw new Error(
       res.status === 0 || text.includes('Failed to fetch')
-        ? 'Whoop blocked the browser request (CORS). Deploy to Vercel (api/whoop-token) or paste tokens manually.'
+        ? 'Whoop blocked the browser request (CORS). Use the live tunnel/preview proxy or Vercel.'
         : `Whoop token error: ${text || res.status}`,
     )
   }
@@ -249,14 +337,7 @@ async function fetchAll<T>(
   return out
 }
 
-export type WhoopSyncResult = {
-  sleeps: WhoopSleep[]
-  recoveries: WhoopRecovery[]
-  cycles: WhoopCycle[]
-  body: WhoopBody | null
-}
-
-export async function syncWhoopData(days = 14): Promise<WhoopSyncResult> {
+export async function syncWhoopData(days = 30): Promise<WhoopCache> {
   let creds = loadWhoopCredentials()
   if (!creds?.accessToken && !creds?.refreshToken) {
     throw new Error('Connect Whoop first')
@@ -272,15 +353,27 @@ export async function syncWhoopData(days = 14): Promise<WhoopSyncResult> {
   }
 
   try {
-    const [sleeps, recoveries, cycles, body] = await Promise.all([
+    const [sleeps, recoveries, cycles, workouts, body, profile] = await Promise.all([
       fetchAll<WhoopSleep>('/activity/sleep', creds.accessToken!, range),
       fetchAll<WhoopRecovery>('/recovery', creds.accessToken!, range),
       fetchAll<WhoopCycle>('/cycle', creds.accessToken!, range),
+      fetchAll<WhoopWorkout>('/activity/workout', creds.accessToken!, range),
       whoopFetch<WhoopBody>('/user/measurement/body', creds.accessToken!).catch(() => null),
+      whoopFetch<WhoopProfile>('/user/profile/basic', creds.accessToken!).catch(() => null),
     ])
-    const next = { ...creds, lastSyncAt: new Date().toISOString() }
-    saveWhoopCredentials(next)
-    return { sleeps, recoveries, cycles, body }
+
+    const cache: WhoopCache = {
+      syncedAt: new Date().toISOString(),
+      profile,
+      body,
+      sleeps,
+      recoveries,
+      cycles,
+      workouts,
+    }
+    saveWhoopCache(cache)
+    saveWhoopCredentials({ ...creds, lastSyncAt: cache.syncedAt })
+    return cache
   } catch (err) {
     if (err instanceof Error && err.message === 'WHOOP_UNAUTHORIZED') {
       creds = await refreshWhoopToken(creds)
@@ -305,10 +398,43 @@ export function sleepHoursFromWhoop(sleep: WhoopSleep): number {
   return Math.round(((end - start) / 3_600_000) * 10) / 10
 }
 
+export function milliToHours(ms?: number): number {
+  if (!ms || ms <= 0) return 0
+  return Math.round((ms / 3_600_000) * 10) / 10
+}
+
 export function qualityFromPerformance(pct?: number): 'poor' | 'ok' | 'good' | 'great' {
   if (pct == null) return 'ok'
   if (pct >= 90) return 'great'
   if (pct >= 75) return 'good'
   if (pct >= 55) return 'ok'
   return 'poor'
+}
+
+export function recoveryZone(score?: number): 'green' | 'yellow' | 'red' | 'none' {
+  if (score == null) return 'none'
+  if (score >= 67) return 'green'
+  if (score >= 34) return 'yellow'
+  return 'red'
+}
+
+export function formatSport(name?: string): string {
+  if (!name) return 'Workout'
+  return name
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+export function formatDurationMs(ms?: number): string {
+  if (!ms || ms <= 0) return '—'
+  const totalMin = Math.round(ms / 60000)
+  const h = Math.floor(totalMin / 60)
+  const m = totalMin % 60
+  if (h <= 0) return `${m}m`
+  return `${h}h ${m}m`
+}
+
+export function kjToKcal(kj?: number): number | null {
+  if (kj == null) return null
+  return Math.round(kj / 4.184)
 }

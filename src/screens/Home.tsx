@@ -175,12 +175,12 @@ export function Home() {
             {weight ? weight.kg.toFixed(1) : '—'} {trendArrow}
           </div>
         </div>
-        <div className="stat-chip">
+        <Link to="/whoop" className="stat-chip" style={{ display: 'block' }}>
           <div className="label">Recovery</div>
           <div className="num num-sm" style={{ color: recoveryColor }}>
             {recovery ? `${Math.round(recovery.score)}%` : '—'}
           </div>
-        </div>
+        </Link>
         <div className="stat-chip">
           <div className="label">Sleep</div>
           <div className="num num-sm">{sleep ? `${sleep.hours}h` : '—'}</div>

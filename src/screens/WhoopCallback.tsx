@@ -29,7 +29,7 @@ export function WhoopCallback() {
     void exchangeWhoopCode(code, creds.clientId, creds.clientSecret)
       .then(() => {
         sessionStorage.removeItem('forge_whoop_oauth_state')
-        navigate('/profile', { replace: true })
+        navigate('/whoop', { replace: true })
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : 'Whoop connect failed')
@@ -42,8 +42,8 @@ export function WhoopCallback() {
       {error ? (
         <>
           <p style={{ color: 'var(--red)', marginBottom: 16 }}>{error}</p>
-          <Link to="/profile" className="btn btn-primary btn-block">
-            Back to Settings
+          <Link to="/whoop" className="btn btn-primary btn-block">
+            Back to Whoop
           </Link>
         </>
       ) : (

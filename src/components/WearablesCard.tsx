@@ -77,9 +77,10 @@ export function WearablesCard() {
     setError(null)
     setMessage(null)
     try {
-      const data = await syncWhoopData(14)
+      const data = await syncWhoopData(30)
       const sleep: SleepEntry[] = []
       for (const s of data.sleeps) {
+        if (s.nap) continue
         const hours = sleepHoursFromWhoop(s)
         if (hours <= 0) continue
         sleep.push({
@@ -121,8 +122,9 @@ export function WearablesCard() {
 
       mergeWearables({ sleep, recovery, weight })
       setMessage(
-        `Whoop synced · ${sleep.length} sleep · ${recovery.length} recovery` +
-          (weight ? ' · weight' : ''),
+        `Whoop synced · ${sleep.length} sleep · ${recovery.length} recovery · ${data.workouts.length} workouts` +
+          (weight ? ' · weight' : '') +
+          ' — open the Whoop tab',
       )
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Whoop sync failed')

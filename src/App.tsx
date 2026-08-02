@@ -5,6 +5,7 @@ import { Home } from './screens/Home'
 import { Train } from './screens/Train'
 import { Fuel } from './screens/Fuel'
 import { Body } from './screens/Body'
+import { Whoop } from './screens/Whoop'
 import { Profile } from './screens/Profile'
 import { WhoopCallback } from './screens/WhoopCallback'
 
@@ -32,6 +33,7 @@ export default function App() {
               <Route index element={<Home />} />
               <Route path="train" element={<Train />} />
               <Route path="fuel" element={<Fuel />} />
+              <Route path="whoop" element={<Whoop />} />
               <Route path="body" element={<Body />} />
               <Route path="profile" element={<Profile />} />
               <Route path="whoop/callback" element={<WhoopCallback />} />

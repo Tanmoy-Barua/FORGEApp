@@ -21,11 +21,12 @@ function IconTrain() {
   )
 }
 
-function IconFuel() {
+function IconWhoop() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M7 3h7l3 4v14H7V3z" />
-      <path d="M10 10h4M10 14h4" />
+      <circle cx="12" cy="12" r="8" />
+      <circle cx="12" cy="12" r="3.5" />
+      <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22" />
     </svg>
   )
 }
@@ -61,9 +62,9 @@ export function BottomNav({ onQuickAdd }: BottomNavProps) {
       <button type="button" className="fab-log" onClick={onQuickAdd} aria-label="Quick log">
         <IconPlus />
       </button>
-      <NavLink to="/fuel" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-        <IconFuel />
-        Fuel
+      <NavLink to="/whoop" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+        <IconWhoop />
+        Whoop
       </NavLink>
       <NavLink to="/body" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
         <IconBody />
