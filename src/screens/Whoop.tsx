@@ -270,45 +270,45 @@ export function Whoop() {
 
   return (
     <div className="page whoop-page">
-      <div className="whoop-hero">
-        <div className="whoop-hero-top">
-          <div>
-            <div className="whoop-kicker">FORGE</div>
-            <h1 className="page-title" style={{ marginBottom: 4 }}>
-              {name || 'Dashboard'}
-            </h1>
-            <p className="page-sub" style={{ marginBottom: 0 }}>
-              {cache?.syncedAt
-                ? `Whoop synced ${new Date(cache.syncedAt).toLocaleString()}`
-                : 'Your Whoop recovery, strain, sleep & workouts'}
-            </p>
-          </div>
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            disabled={busy}
-            onClick={() => (connected ? void sync() : connect())}
-          >
-            {busy ? 'Syncing…' : connected ? 'Sync' : 'Connect'}
-          </button>
-        </div>
-
-        {error && <p style={{ color: 'var(--red)', fontSize: 13, marginTop: 12 }}>{error}</p>}
-
-        {!connected && !cache && (
-          <div className="whoop-empty">
-            <p>Connect your Whoop to fill this dashboard with live recovery, strain, sleep stages, and workouts.</p>
-            <button type="button" className="btn btn-primary btn-block" onClick={connect}>
-              Connect Whoop
+      <section className="desk-hero">
+        <div className="whoop-hero">
+          <div className="whoop-hero-top">
+            <div>
+              <div className="whoop-kicker">FORGE</div>
+              <h1 className="page-title" style={{ marginBottom: 4 }}>
+                {name || 'Dashboard'}
+              </h1>
+              <p className="page-sub" style={{ marginBottom: 0 }}>
+                {cache?.syncedAt
+                  ? `Whoop synced ${new Date(cache.syncedAt).toLocaleString()}`
+                  : 'Your Whoop recovery, strain, sleep & workouts'}
+              </p>
+            </div>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              disabled={busy}
+              onClick={() => (connected ? void sync() : connect())}
+            >
+              {busy ? 'Syncing…' : connected ? 'Sync' : 'Connect'}
             </button>
-            <Link to="/profile" className="btn btn-ghost btn-block" style={{ marginTop: 8 }}>
-              Open Settings
-            </Link>
           </div>
-        )}
 
-        {(connected || cache) && (
-          <>
+          {error && <p style={{ color: 'var(--red)', fontSize: 13, marginTop: 12 }}>{error}</p>}
+
+          {!connected && !cache && (
+            <div className="whoop-empty">
+              <p>Connect your Whoop to fill this dashboard with live recovery, strain, sleep stages, and workouts.</p>
+              <button type="button" className="btn btn-primary btn-block" onClick={connect}>
+                Connect Whoop
+              </button>
+              <Link to="/profile" className="btn btn-ghost btn-block" style={{ marginTop: 8 }}>
+                Open Settings
+              </Link>
+            </div>
+          )}
+
+          {(connected || cache) && (
             <div className="whoop-rings">
               <ScoreRing
                 value={latestRecovery?.score?.recovery_score ?? null}
@@ -330,16 +330,18 @@ export function Whoop() {
                 sub={latestSleep ? `${sleepHoursFromWhoop(latestSleep)}h` : '—'}
               />
             </div>
-          </>
-        )}
-      </div>
+          )}
+        </div>
+      </section>
 
-      <NextMoveCard move={nextMove} />
-      <DailyTargetsCard targets={dailyTargets} />
+      <section className="desk-coach">
+        <NextMoveCard move={nextMove} />
+        <DailyTargetsCard targets={dailyTargets} />
+      </section>
 
       {cache && (
         <>
-          <div className="whoop-metrics">
+          <div className="whoop-metrics desk-metrics">
             <div className="whoop-metric">
               <div className="label">HRV</div>
               <div className="num num-md">
@@ -376,6 +378,12 @@ export function Whoop() {
             </div>
           </div>
 
+          {latestRecovery?.score?.user_calibrating && (
+            <div className="whoop-banner">Whoop is still calibrating recovery for this account.</div>
+          )}
+
+          <div className="desk-split">
+          <div className="desk-col desk-col-main">
           <div className="card whoop-card">
             <div className="card-title">Sleep night</div>
             {latestSleep ? (
@@ -467,10 +475,6 @@ export function Whoop() {
             )}
           </div>
 
-          {latestRecovery?.score?.user_calibrating && (
-            <div className="whoop-banner">Whoop is still calibrating recovery for this account.</div>
-          )}
-
           <div className="card whoop-card">
             <div className="card-title">14-day pulse</div>
             {trend.length > 1 ? (
@@ -549,6 +553,8 @@ export function Whoop() {
             )}
           </div>
 
+          </div>
+          <div className="desk-col desk-col-side">
           <div className="section-label">Workouts</div>
           {cache.workouts.length === 0 ? (
             <div className="card empty">No Whoop workouts in the last 30 days.</div>
@@ -835,6 +841,8 @@ export function Whoop() {
               </div>
             </div>
           )}
+          </div>
+          </div>
         </>
       )}
     </div>

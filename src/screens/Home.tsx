@@ -72,8 +72,8 @@ export function Home() {
   const dailyTargets = useMemo(() => buildDailyTargets(state, whoopCache), [state, whoopCache])
 
   return (
-    <div className="page">
-      <div className="race-banner">
+    <div className="page race-page">
+      <div className="race-banner desk-hero">
         <div className="race-label">{state.profile.raceName}</div>
         <div className="race-days">
           {Math.max(0, days)}
@@ -84,9 +84,13 @@ export function Home() {
         </div>
       </div>
 
-      <NextMoveCard move={nextMove} compact />
-      <DailyTargetsCard targets={dailyTargets} />
+      <section className="desk-coach">
+        <NextMoveCard move={nextMove} compact />
+        <DailyTargetsCard targets={dailyTargets} />
+      </section>
 
+      <div className="desk-split">
+      <div className="desk-col">
       <div className="card">
         <div className="card-title">Today</div>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
@@ -218,7 +222,9 @@ export function Home() {
           })}
         </div>
       </div>
+      </div>
 
+      <div className="desk-col">
       <div className="section-label">Progress</div>
 
       <div className="card">
@@ -279,6 +285,8 @@ export function Home() {
       <Link to="/profile" className="btn btn-ghost btn-block" style={{ marginTop: 8 }}>
         Plan settings & export
       </Link>
+      </div>
+      </div>
     </div>
   )
 }

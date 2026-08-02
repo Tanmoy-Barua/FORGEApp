@@ -1,44 +1,8 @@
 import { NavLink } from 'react-router-dom'
+import { PRIMARY_NAV } from './navItems'
 
 interface BottomNavProps {
   onQuickAdd: () => void
-}
-
-function IconWhoop() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="12" cy="12" r="8" />
-      <circle cx="12" cy="12" r="3.5" />
-      <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22" />
-    </svg>
-  )
-}
-
-function IconTrain() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M6 7h12v10H6z" />
-      <path d="M9 17v3M15 17v3M8 7V5h8v2M4 11h16" />
-    </svg>
-  )
-}
-
-function IconRace() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M4 20V10l6-3 4 2 6-3v14" />
-      <path d="M4 20h16M10 7v13M14 9v11" />
-    </svg>
-  )
-}
-
-function IconBody() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="12" cy="5" r="2.5" />
-      <path d="M8 10h8l-1.5 5H9.5L8 10zM9.5 15l-1.5 6M14.5 15l1.5 6M7 11.5 4.5 9M17 11.5 19.5 9" />
-    </svg>
-  )
 }
 
 function IconPlus() {
@@ -49,28 +13,38 @@ function IconPlus() {
   )
 }
 
+/** Mobile-only primary nav (hidden on desktop via CSS). */
 export function BottomNav({ onQuickAdd }: BottomNavProps) {
+  // Mobile keeps Home / Train / + / Race / Body (Fuel lives in desktop sidebar + settings)
+  const mobile = PRIMARY_NAV.filter((n) => n.to !== '/fuel')
+
   return (
     <nav className="bottom-nav" aria-label="Primary">
-      <NavLink to="/" end className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-        <IconWhoop />
-        Home
-      </NavLink>
-      <NavLink to="/train" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-        <IconTrain />
-        Train
-      </NavLink>
+      {mobile.slice(0, 2).map((item) => (
+        <NavLink
+          key={item.to}
+          to={item.to}
+          end={item.end}
+          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+        >
+          {item.icon}
+          {item.label}
+        </NavLink>
+      ))}
       <button type="button" className="fab-log" onClick={onQuickAdd} aria-label="Quick log">
         <IconPlus />
       </button>
-      <NavLink to="/race" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-        <IconRace />
-        Race
-      </NavLink>
-      <NavLink to="/body" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-        <IconBody />
-        Body
-      </NavLink>
+      {mobile.slice(2).map((item) => (
+        <NavLink
+          key={item.to}
+          to={item.to}
+          end={item.end}
+          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+        >
+          {item.icon}
+          {item.label}
+        </NavLink>
+      ))}
     </nav>
   )
 }
