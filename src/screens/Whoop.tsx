@@ -11,8 +11,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { DailyTargetsCard } from '../components/DailyTargetsCard'
 import { NextMoveCard } from '../components/NextMoveCard'
-import { buildNextMove } from '../lib/coach'
+import { buildDailyTargets, buildNextMove } from '../lib/coach'
 import {
   buildWhoopAuthUrl,
   formatDurationMs,
@@ -140,14 +141,23 @@ export function Whoop() {
     return cache.sleeps.filter((s) => !s.nap)[0] ?? cache.sleeps[0]
   }, [cache, latestRecovery])
 
+  const coachOpts = useMemo(
+    () => ({
+      recovery: latestRecovery,
+      cycle: latestCycle,
+      sleep: latestSleep,
+    }),
+    [latestRecovery, latestCycle, latestSleep],
+  )
+
   const nextMove = useMemo(
-    () =>
-      buildNextMove(state, cache, {
-        recovery: latestRecovery,
-        cycle: latestCycle,
-        sleep: latestSleep,
-      }),
-    [state, cache, latestRecovery, latestCycle, latestSleep],
+    () => buildNextMove(state, cache, coachOpts),
+    [state, cache, coachOpts],
+  )
+
+  const dailyTargets = useMemo(
+    () => buildDailyTargets(state, cache, coachOpts),
+    [state, cache, coachOpts],
   )
 
   const zone = recoveryZone(latestRecovery?.score?.recovery_score)
@@ -325,6 +335,7 @@ export function Whoop() {
       </div>
 
       <NextMoveCard move={nextMove} />
+      <DailyTargetsCard targets={dailyTargets} />
 
       {cache && (
         <>

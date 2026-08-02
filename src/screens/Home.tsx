@@ -8,9 +8,10 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { DailyTargetsCard } from '../components/DailyTargetsCard'
 import { NextMoveCard } from '../components/NextMoveCard'
 import { Ring } from '../components/ui/Ring'
-import { buildNextMove } from '../lib/coach'
+import { buildDailyTargets, buildNextMove } from '../lib/coach'
 import { loadWhoopCache } from '../lib/whoop'
 import { useStore } from '../store/StoreContext'
 import {
@@ -66,7 +67,9 @@ export function Home() {
   const recoveryColor =
     !recovery ? 'var(--text-muted)' : recovery.score >= 67 ? 'var(--green)' : recovery.score >= 34 ? 'var(--amber)' : 'var(--red)'
 
-  const nextMove = useMemo(() => buildNextMove(state, loadWhoopCache()), [state])
+  const whoopCache = useMemo(() => loadWhoopCache(), [state.recoveryEntries, state.sleepEntries])
+  const nextMove = useMemo(() => buildNextMove(state, whoopCache), [state, whoopCache])
+  const dailyTargets = useMemo(() => buildDailyTargets(state, whoopCache), [state, whoopCache])
 
   return (
     <div className="page">
@@ -82,6 +85,7 @@ export function Home() {
       </div>
 
       <NextMoveCard move={nextMove} compact />
+      <DailyTargetsCard targets={dailyTargets} />
 
       <div className="card">
         <div className="card-title">Today</div>

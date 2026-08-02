@@ -1123,6 +1123,180 @@ p {
   border: 1px solid var(--border);
 }
 
+/* ── Daily targets (sleep / train / eat) ── */
+
+.daily-targets {
+  margin-bottom: 14px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(420px 180px at 0% 0%, rgba(125, 211, 252, 0.12), transparent 55%),
+    radial-gradient(380px 160px at 100% 0%, rgba(215, 255, 0, 0.1), transparent 50%),
+    linear-gradient(180deg, #141820 0%, #101218 100%);
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  animation: whoopFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.daily-targets-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.daily-targets-kicker {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+  margin-bottom: 4px;
+}
+
+.daily-targets-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+.daily-targets-date {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.daily-targets-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.daily-target {
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--border-subtle);
+}
+
+.daily-target.sleep {
+  border-color: rgba(125, 211, 252, 0.25);
+}
+
+.daily-target.workout {
+  border-color: rgba(215, 255, 0, 0.22);
+}
+
+.daily-target.fuel {
+  border-color: rgba(61, 214, 140, 0.22);
+}
+
+.daily-target-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.daily-target-num {
+  font-size: 40px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.daily-target-num .unit {
+  font-size: 18px;
+  margin-left: 4px;
+  color: var(--text-muted);
+}
+
+.daily-target-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.daily-target-focus {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.daily-target-breakdown {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.daily-target-detail {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.daily-target-tag {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+  background: rgba(125, 211, 252, 0.1);
+  border: 1px solid rgba(125, 211, 252, 0.25);
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+.daily-target-tag.adj {
+  color: var(--amber);
+  background: rgba(245, 165, 36, 0.1);
+  border-color: rgba(245, 165, 36, 0.3);
+}
+
+.daily-target-macros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.daily-target-macros .label {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+
+.daily-targets-notes {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.daily-targets-notes li {
+  margin-bottom: 4px;
+}
+
+@media (min-width: 720px) {
+  .daily-targets-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 /* ── Next move coaching ── */
 
 .next-move {
