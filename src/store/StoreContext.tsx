@@ -5,9 +5,11 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
+import type { User } from 'firebase/auth'
 import type {
   AppState,
   BodyCompEntry,
@@ -32,6 +34,16 @@ import type {
 } from '../types'
 import { createInitialState, loadState, saveState } from './storage'
 import { uid, todayKey } from '../utils/dates'
+import {
+  isFirebaseConfigured,
+  signIn as authSignIn,
+  signOut as authSignOut,
+  signUp as authSignUp,
+  watchAuth,
+} from '../lib/auth'
+import { mergeCloudState, pushUserState, subscribeUserState } from '../lib/cloudSync'
+
+export type SyncStatus = 'disabled' | 'signed_out' | 'syncing' | 'synced' | 'error'
 
 type Action =
   | { type: 'HYDRATE'; state: AppState }
@@ -366,6 +378,13 @@ interface StoreApi {
   state: AppState
   ready: boolean
   dispatch: React.Dispatch<Action>
+  cloudEnabled: boolean
+  user: User | null
+  syncStatus: SyncStatus
+  syncError: string | null
+  signIn: (email: string, password: string) => Promise<void>
+  signUp: (email: string, password: string) => Promise<void>
+  signOut: () => Promise<void>
   addWater: (ml?: number) => void
   addWeight: (kg: number) => void
   addSteps: (steps: number) => void
@@ -403,6 +422,16 @@ const StoreContext = createContext<StoreApi | null>(null)
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, createInitialState)
   const [ready, setReady] = useState(false)
+  const cloudEnabled = isFirebaseConfigured()
+  const [user, setUser] = useState<User | null>(null)
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>(
+    cloudEnabled ? 'signed_out' : 'disabled',
+  )
+  const [syncError, setSyncError] = useState<string | null>(null)
+  const applyingRemote = useRef(false)
+  const lastPushedAt = useRef(0)
+  const stateRef = useRef(state)
+  stateRef.current = state
 
   useEffect(() => {
     dispatch({ type: 'HYDRATE', state: loadState() })
@@ -412,6 +441,119 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (ready) saveState(state)
   }, [state, ready])
+
+  useEffect(() => {
+    if (!cloudEnabled) {
+      setSyncStatus('disabled')
+      return
+    }
+    return watchAuth(
+      (next) => {
+        setUser(next)
+        setSyncStatus(next ? 'syncing' : 'signed_out')
+        setSyncError(null)
+      },
+      (err) => {
+        setSyncError(err.message)
+        setSyncStatus('error')
+      },
+    )
+  }, [cloudEnabled])
+
+  useEffect(() => {
+    if (!cloudEnabled || !user || !ready) return
+
+    setSyncStatus('syncing')
+    const unsub = subscribeUserState(
+      user.uid,
+      (remote, updatedAt) => {
+        if (!remote) {
+          // Seed cloud with current local state
+          void pushUserState(user.uid, stateRef.current)
+            .then(() => {
+              lastPushedAt.current = Date.now()
+              setSyncStatus('synced')
+            })
+            .catch((err: Error) => {
+              setSyncError(err.message)
+              setSyncStatus('error')
+            })
+          return
+        }
+
+        // Ignore echo of our own recent push
+        if (updatedAt && updatedAt <= lastPushedAt.current + 50) {
+          setSyncStatus('synced')
+          return
+        }
+
+        applyingRemote.current = true
+        const merged = mergeCloudState(remote, stateRef.current)
+        dispatch({ type: 'HYDRATE', state: merged })
+        setSyncStatus('synced')
+        setSyncError(null)
+      },
+      (err) => {
+        setSyncError(err.message)
+        setSyncStatus('error')
+      },
+    )
+    return unsub
+  }, [cloudEnabled, user, ready])
+
+  useEffect(() => {
+    if (!ready || !cloudEnabled || !user) return
+    if (applyingRemote.current) {
+      applyingRemote.current = false
+      return
+    }
+
+    setSyncStatus('syncing')
+    const timer = window.setTimeout(() => {
+      void pushUserState(user.uid, state)
+        .then(() => {
+          lastPushedAt.current = Date.now()
+          setSyncStatus('synced')
+          setSyncError(null)
+        })
+        .catch((err: Error) => {
+          setSyncError(err.message)
+          setSyncStatus('error')
+        })
+    }, 900)
+    return () => window.clearTimeout(timer)
+  }, [state, ready, cloudEnabled, user])
+
+  const signIn = useCallback(async (email: string, password: string) => {
+    setSyncError(null)
+    setSyncStatus('syncing')
+    try {
+      await authSignIn(email, password)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Sign-in failed'
+      setSyncError(message)
+      setSyncStatus('error')
+      throw err
+    }
+  }, [])
+
+  const signUp = useCallback(async (email: string, password: string) => {
+    setSyncError(null)
+    setSyncStatus('syncing')
+    try {
+      await authSignUp(email, password)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Sign-up failed'
+      setSyncError(message)
+      setSyncStatus('error')
+      throw err
+    }
+  }, [])
+
+  const signOut = useCallback(async () => {
+    await authSignOut()
+    setSyncStatus(cloudEnabled ? 'signed_out' : 'disabled')
+  }, [cloudEnabled])
 
   const addWater = useCallback((ml = 250) => {
     dispatch({ type: 'ADD_WATER', amountMl: ml })
@@ -524,6 +666,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       state,
       ready,
       dispatch,
+      cloudEnabled,
+      user,
+      syncStatus,
+      syncError,
+      signIn,
+      signUp,
+      signOut,
       addWater,
       addWeight,
       addSteps,
@@ -552,6 +701,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [
       state,
       ready,
+      cloudEnabled,
+      user,
+      syncStatus,
+      syncError,
+      signIn,
+      signUp,
+      signOut,
       addWater,
       addWeight,
       addSteps,

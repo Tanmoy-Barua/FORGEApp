@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { CloudSyncCard } from '../components/CloudSyncCard'
 import { useStore } from '../store/StoreContext'
 import { exportCsv, exportStateJson } from '../store/storage'
 import type { AppState } from '../types'
@@ -62,7 +63,9 @@ export function Profile() {
         ← Home
       </Link>
       <h1 className="page-title">Settings</h1>
-      <p className="page-sub">Targets, race, export — your data stays yours</p>
+      <p className="page-sub">Targets, race, cloud sync, export</p>
+
+      <CloudSyncCard />
 
       <div className="card">
         <div className="card-title">Athlete</div>
