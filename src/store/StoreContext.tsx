@@ -41,6 +41,13 @@ import {
   signUp as authSignUp,
   watchAuth,
 } from '../lib/auth'
+import {
+  connectFirebase,
+  disconnectFirebase,
+  getResolvedConfig,
+  parseFirebaseConfigPaste,
+  type FirebaseWebConfig,
+} from '../lib/firebase'
 import { mergeCloudState, pushUserState, subscribeUserState } from '../lib/cloudSync'
 
 export type SyncStatus = 'disabled' | 'signed_out' | 'syncing' | 'synced' | 'error'
@@ -379,9 +386,12 @@ interface StoreApi {
   ready: boolean
   dispatch: React.Dispatch<Action>
   cloudEnabled: boolean
+  cloudProjectId: string | null
   user: User | null
   syncStatus: SyncStatus
   syncError: string | null
+  connectCloud: (paste: string) => Promise<void>
+  disconnectCloud: () => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
@@ -422,11 +432,11 @@ const StoreContext = createContext<StoreApi | null>(null)
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, createInitialState)
   const [ready, setReady] = useState(false)
+  const [configEpoch, setConfigEpoch] = useState(0)
   const cloudEnabled = isFirebaseConfigured()
+  const cloudProjectId = getResolvedConfig()?.projectId ?? null
   const [user, setUser] = useState<User | null>(null)
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>(
-    cloudEnabled ? 'signed_out' : 'disabled',
-  )
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>('disabled')
   const [syncError, setSyncError] = useState<string | null>(null)
   const applyingRemote = useRef(false)
   const lastPushedAt = useRef(0)
@@ -444,9 +454,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!cloudEnabled) {
+      setUser(null)
       setSyncStatus('disabled')
       return
     }
+    setSyncStatus('signed_out')
     return watchAuth(
       (next) => {
         setUser(next)
@@ -458,7 +470,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setSyncStatus('error')
       },
     )
-  }, [cloudEnabled])
+  }, [cloudEnabled, configEpoch])
 
   useEffect(() => {
     if (!cloudEnabled || !user || !ready) return
@@ -554,6 +566,32 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     await authSignOut()
     setSyncStatus(cloudEnabled ? 'signed_out' : 'disabled')
   }, [cloudEnabled])
+
+  const connectCloud = useCallback(async (paste: string) => {
+    setSyncError(null)
+    const config: FirebaseWebConfig = parseFirebaseConfigPaste(paste)
+    try {
+      await authSignOut()
+    } catch {
+      // ignore if not signed in
+    }
+    await connectFirebase(config)
+    setConfigEpoch((n) => n + 1)
+    setSyncStatus('signed_out')
+  }, [])
+
+  const disconnectCloud = useCallback(async () => {
+    try {
+      await authSignOut()
+    } catch {
+      // ignore
+    }
+    await disconnectFirebase()
+    setUser(null)
+    setSyncError(null)
+    setSyncStatus('disabled')
+    setConfigEpoch((n) => n + 1)
+  }, [])
 
   const addWater = useCallback((ml = 250) => {
     dispatch({ type: 'ADD_WATER', amountMl: ml })
@@ -667,9 +705,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       ready,
       dispatch,
       cloudEnabled,
+      cloudProjectId,
       user,
       syncStatus,
       syncError,
+      connectCloud,
+      disconnectCloud,
       signIn,
       signUp,
       signOut,
@@ -702,9 +743,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       state,
       ready,
       cloudEnabled,
+      cloudProjectId,
       user,
       syncStatus,
       syncError,
+      connectCloud,
+      disconnectCloud,
       signIn,
       signUp,
       signOut,
