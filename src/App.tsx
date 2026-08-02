@@ -19,10 +19,12 @@ function BootGate({ children }: { children: React.ReactNode }) {
   return children
 }
 
+const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined
+
 export default function App() {
   return (
     <StoreProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={routerBasename}>
         <BootGate>
           <Routes>
             <Route element={<AppShell />}>
