@@ -124,7 +124,7 @@ export function WearablesCard() {
       setMessage(
         `Whoop synced · ${sleep.length} sleep · ${recovery.length} recovery · ${data.workouts.length} workouts` +
           (weight ? ' · weight' : '') +
-          ' — open the Whoop tab',
+          ' — view on Home'
       )
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Whoop sync failed')

@@ -251,14 +251,14 @@ export function Whoop() {
       <div className="whoop-hero">
         <div className="whoop-hero-top">
           <div>
-            <div className="whoop-kicker">WHOOP · FORGE</div>
+            <div className="whoop-kicker">FORGE</div>
             <h1 className="page-title" style={{ marginBottom: 4 }}>
-              {name || 'Pulse'}
+              {name || 'Dashboard'}
             </h1>
             <p className="page-sub" style={{ marginBottom: 0 }}>
               {cache?.syncedAt
-                ? `Synced ${new Date(cache.syncedAt).toLocaleString()}`
-                : 'Recovery, strain, sleep, workouts — all in one view'}
+                ? `Whoop synced ${new Date(cache.syncedAt).toLocaleString()}`
+                : 'Your Whoop recovery, strain, sleep & workouts'}
             </p>
           </div>
           <button

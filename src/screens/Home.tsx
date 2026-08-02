@@ -175,7 +175,7 @@ export function Home() {
             {weight ? weight.kg.toFixed(1) : '—'} {trendArrow}
           </div>
         </div>
-        <Link to="/whoop" className="stat-chip" style={{ display: 'block' }}>
+        <Link to="/" className="stat-chip" style={{ display: 'block' }}>
           <div className="label">Recovery</div>
           <div className="num num-sm" style={{ color: recoveryColor }}>
             {recovery ? `${Math.round(recovery.score)}%` : '—'}

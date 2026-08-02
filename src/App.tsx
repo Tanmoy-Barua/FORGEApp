@@ -30,10 +30,11 @@ export default function App() {
         <BootGate>
           <Routes>
             <Route element={<AppShell />}>
-              <Route index element={<Home />} />
+              <Route index element={<Whoop />} />
               <Route path="train" element={<Train />} />
               <Route path="fuel" element={<Fuel />} />
-              <Route path="whoop" element={<Whoop />} />
+              <Route path="race" element={<Home />} />
+              <Route path="whoop" element={<Navigate to="/" replace />} />
               <Route path="body" element={<Body />} />
               <Route path="profile" element={<Profile />} />
               <Route path="whoop/callback" element={<WhoopCallback />} />
