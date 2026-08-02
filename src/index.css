@@ -1123,6 +1123,157 @@ p {
   border: 1px solid var(--border);
 }
 
+/* ── Next move coaching ── */
+
+.next-move {
+  position: relative;
+  margin-bottom: 14px;
+  padding: 18px 16px 16px;
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, rgba(215, 255, 0, 0.08), transparent 45%),
+    linear-gradient(180deg, #171a14 0%, #12141a 100%);
+  border: 1px solid rgba(215, 255, 0, 0.22);
+  animation: whoopFadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.next-move-compact {
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.next-move-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.next-move-kicker {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.next-move-headline {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.next-move-compact .next-move-headline {
+  font-size: 22px;
+}
+
+.next-move-intensity {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.next-move-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 10px;
+}
+
+.next-move-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 4px 8px;
+}
+
+.next-move-badge-adj {
+  color: var(--amber);
+  border-color: rgba(245, 165, 36, 0.35);
+  background: rgba(245, 165, 36, 0.1);
+}
+
+.next-move-action {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.next-move-plan {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--border-subtle);
+}
+
+.next-move-plan .label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.next-move-plan-focus {
+  margin-top: 4px;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.next-move-why {
+  margin: 0 0 14px;
+  padding-left: 18px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.next-move-why li {
+  margin-bottom: 6px;
+}
+
+.next-move-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.next-move-metrics .label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+@media (max-width: 420px) {
+  .next-move-headline {
+    font-size: 24px;
+  }
+  .next-move-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* ── Whoop dashboard ── */
 
 .whoop-page {

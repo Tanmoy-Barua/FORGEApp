@@ -11,6 +11,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { NextMoveCard } from '../components/NextMoveCard'
+import { buildNextMove } from '../lib/coach'
 import {
   buildWhoopAuthUrl,
   formatDurationMs,
@@ -114,7 +116,7 @@ function StageBar({
 }
 
 export function Whoop() {
-  const { mergeWearables } = useStore()
+  const { state, mergeWearables } = useStore()
   const [cache, setCache] = useState<WhoopCache | null>(() => loadWhoopCache())
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -137,6 +139,16 @@ export function Whoop() {
     }
     return cache.sleeps.filter((s) => !s.nap)[0] ?? cache.sleeps[0]
   }, [cache, latestRecovery])
+
+  const nextMove = useMemo(
+    () =>
+      buildNextMove(state, cache, {
+        recovery: latestRecovery,
+        cycle: latestCycle,
+        sleep: latestSleep,
+      }),
+    [state, cache, latestRecovery, latestCycle, latestSleep],
+  )
 
   const zone = recoveryZone(latestRecovery?.score?.recovery_score)
   const zoneColor =
@@ -311,6 +323,8 @@ export function Whoop() {
           </>
         )}
       </div>
+
+      <NextMoveCard move={nextMove} />
 
       {cache && (
         <>

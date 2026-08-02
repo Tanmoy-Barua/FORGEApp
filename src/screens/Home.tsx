@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   Area,
@@ -7,7 +8,10 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { NextMoveCard } from '../components/NextMoveCard'
 import { Ring } from '../components/ui/Ring'
+import { buildNextMove } from '../lib/coach'
+import { loadWhoopCache } from '../lib/whoop'
 import { useStore } from '../store/StoreContext'
 import {
   computeStreak,
@@ -62,6 +66,8 @@ export function Home() {
   const recoveryColor =
     !recovery ? 'var(--text-muted)' : recovery.score >= 67 ? 'var(--green)' : recovery.score >= 34 ? 'var(--amber)' : 'var(--red)'
 
+  const nextMove = useMemo(() => buildNextMove(state, loadWhoopCache()), [state])
+
   return (
     <div className="page">
       <div className="race-banner">
@@ -74,6 +80,8 @@ export function Home() {
           <div className="progress-fill" style={{ width: `${progress * 100}%` }} />
         </div>
       </div>
+
+      <NextMoveCard move={nextMove} compact />
 
       <div className="card">
         <div className="card-title">Today</div>
