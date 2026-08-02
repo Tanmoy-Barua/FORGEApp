@@ -64,15 +64,27 @@ export type WhoopBody = {
   max_heart_rate?: number
 }
 
+function envWhoopDefaults(): Pick<WhoopCredentials, 'clientId' | 'clientSecret'> | null {
+  const clientId = import.meta.env.VITE_WHOOP_CLIENT_ID
+  const clientSecret = import.meta.env.VITE_WHOOP_CLIENT_SECRET
+  if (!clientId || !clientSecret) return null
+  return { clientId, clientSecret }
+}
+
 export function loadWhoopCredentials(): WhoopCredentials | null {
+  const fromEnv = envWhoopDefaults()
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
+    if (!raw) {
+      return fromEnv ? { ...fromEnv } : null
+    }
     const parsed = JSON.parse(raw) as WhoopCredentials
-    if (!parsed.clientId || !parsed.clientSecret) return null
-    return parsed
+    const clientId = parsed.clientId || fromEnv?.clientId || ''
+    const clientSecret = parsed.clientSecret || fromEnv?.clientSecret || ''
+    if (!clientId || !clientSecret) return null
+    return { ...parsed, clientId, clientSecret }
   } catch {
-    return null
+    return fromEnv ? { ...fromEnv } : null
   }
 }
 

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { parseAppleHealthExport, readAppleHealthFile } from '../lib/appleHealth'
 import {
   buildWhoopAuthUrl,
@@ -17,15 +17,30 @@ import type { RecoveryEntry, SleepEntry } from '../types'
 export function WearablesCard() {
   const { mergeWearables } = useStore()
   const fileRef = useRef<HTMLInputElement>(null)
-  const [clientId, setClientId] = useState(() => loadWhoopCredentials()?.clientId ?? '')
+  const [clientId, setClientId] = useState(
+    () => loadWhoopCredentials()?.clientId ?? import.meta.env.VITE_WHOOP_CLIENT_ID ?? '',
+  )
   const [clientSecret, setClientSecret] = useState(
-    () => loadWhoopCredentials()?.clientSecret ?? '',
+    () =>
+      loadWhoopCredentials()?.clientSecret ?? import.meta.env.VITE_WHOOP_CLIENT_SECRET ?? '',
   )
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const creds = loadWhoopCredentials()
   const whoopConnected = Boolean(creds?.accessToken || creds?.refreshToken)
+
+  // Persist env-baked Whoop app keys into localStorage once so OAuth callback can read them
+  useEffect(() => {
+    if (!clientId || !clientSecret) return
+    const existing = loadWhoopCredentials()
+    if (existing?.clientId === clientId && existing?.clientSecret === clientSecret) return
+    saveWhoopCredentials({
+      ...(existing ?? { clientId: '', clientSecret: '' }),
+      clientId,
+      clientSecret,
+    })
+  }, [clientId, clientSecret])
 
   const saveCreds = () => {
     setError(null)
