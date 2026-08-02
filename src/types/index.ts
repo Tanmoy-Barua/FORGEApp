@@ -152,11 +152,25 @@ export interface BodyCompEntry {
   bodyFatPct: number
 }
 
+export type WearableSource = 'manual' | 'whoop' | 'apple_health'
+
 export interface SleepEntry {
   id: string
   date: string
   hours: number
   quality: SleepQuality
+  source?: WearableSource
+  performancePct?: number
+}
+
+export interface RecoveryEntry {
+  id: string
+  date: string
+  score: number
+  hrvMs?: number
+  restingHr?: number
+  strain?: number
+  source: WearableSource
 }
 
 export interface HabitTick {
@@ -194,6 +208,7 @@ export interface AppState {
   measurements: Measurement[]
   bodyComp: BodyCompEntry[]
   sleepEntries: SleepEntry[]
+  recoveryEntries: RecoveryEntry[]
   habitTicks: HabitTick[]
   progressPhotos: ProgressPhoto[]
   stepsEntries: StepsEntry[]

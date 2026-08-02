@@ -21,6 +21,7 @@ import type {
   MealSlot,
   Measurement,
   ProgressPhoto,
+  RecoveryEntry,
   RunSession,
   SleepEntry,
   SleepQuality,
@@ -87,6 +88,13 @@ type Action =
   | { type: 'ADD_PHOTO'; localDataUrl: string; note?: string; date?: string }
   | { type: 'REMOVE_PHOTO'; id: string }
   | { type: 'IMPORT_STATE'; state: AppState }
+  | {
+      type: 'MERGE_WEARABLES'
+      sleep?: SleepEntry[]
+      steps?: StepsEntry[]
+      weight?: WeightEntry[]
+      recovery?: RecoveryEntry[]
+    }
 
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -376,6 +384,24 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         progressPhotos: state.progressPhotos.filter((p) => p.id !== action.id),
       }
+    case 'MERGE_WEARABLES': {
+      const mergeByDate = <T extends { date: string; id: string }>(
+        existing: T[],
+        incoming: T[] | undefined,
+      ): T[] => {
+        if (!incoming?.length) return existing
+        const map = new Map(existing.map((e) => [e.date, e]))
+        for (const item of incoming) map.set(item.date, item)
+        return [...map.values()].sort((a, b) => a.date.localeCompare(b.date))
+      }
+      return {
+        ...state,
+        sleepEntries: mergeByDate(state.sleepEntries, action.sleep),
+        stepsEntries: mergeByDate(state.stepsEntries, action.steps),
+        weightEntries: mergeByDate(state.weightEntries, action.weight),
+        recoveryEntries: mergeByDate(state.recoveryEntries ?? [], action.recovery),
+      }
+    }
     default:
       return state
   }
@@ -425,6 +451,12 @@ interface StoreApi {
   removePhoto: (id: string) => void
   resetAll: () => void
   importState: (state: AppState) => void
+  mergeWearables: (payload: {
+    sleep?: SleepEntry[]
+    steps?: StepsEntry[]
+    weight?: WeightEntry[]
+    recovery?: RecoveryEntry[]
+  }) => void
 }
 
 const StoreContext = createContext<StoreApi | null>(null)
@@ -699,6 +731,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'IMPORT_STATE', state: next })
   }, [])
 
+  const mergeWearables = useCallback(
+    (payload: {
+      sleep?: SleepEntry[]
+      steps?: StepsEntry[]
+      weight?: WeightEntry[]
+      recovery?: RecoveryEntry[]
+    }) => {
+      dispatch({ type: 'MERGE_WEARABLES', ...payload })
+    },
+    [],
+  )
+
   const api = useMemo<StoreApi>(
     () => ({
       state,
@@ -738,6 +782,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       removePhoto,
       resetAll,
       importState,
+      mergeWearables,
     }),
     [
       state,
@@ -776,6 +821,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       removePhoto,
       resetAll,
       importState,
+      mergeWearables,
     ],
   )
 

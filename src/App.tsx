@@ -6,6 +6,7 @@ import { Train } from './screens/Train'
 import { Fuel } from './screens/Fuel'
 import { Body } from './screens/Body'
 import { Profile } from './screens/Profile'
+import { WhoopCallback } from './screens/WhoopCallback'
 
 function BootGate({ children }: { children: React.ReactNode }) {
   const { ready } = useStore()
@@ -33,6 +34,7 @@ export default function App() {
               <Route path="fuel" element={<Fuel />} />
               <Route path="body" element={<Body />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="whoop/callback" element={<WhoopCallback />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>

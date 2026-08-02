@@ -36,6 +36,7 @@ export function createInitialState(): AppState {
     measurements: [],
     bodyComp: [],
     sleepEntries: [],
+    recoveryEntries: [],
     habitTicks: [],
     progressPhotos: [],
     stepsEntries: [],
@@ -57,6 +58,7 @@ export function loadState(): AppState {
       foodLibrary: parsed.foodLibrary?.length ? parsed.foodLibrary : base.foodLibrary,
       mealTemplates: parsed.mealTemplates?.length ? parsed.mealTemplates : base.mealTemplates,
       plan: parsed.plan?.length ? parsed.plan : base.plan,
+      recoveryEntries: parsed.recoveryEntries ?? [],
     }
   } catch {
     return createInitialState()

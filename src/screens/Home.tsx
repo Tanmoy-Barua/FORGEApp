@@ -51,11 +51,16 @@ export function Home() {
   const streak = computeStreak(state)
   const week = weekSessionStats(state)
   const sleep = sleepForDay(state, date)
+  const recovery = [...(state.recoveryEntries ?? [])]
+    .filter((r) => r.date <= date)
+    .sort((a, b) => b.date.localeCompare(a.date))[0]
   const heat = consistencyHeatmap(state, 84)
   const weightChart = movingAverage(state.weightEntries).slice(-30)
 
   const trendArrow = trend === 'down' ? '↓' : trend === 'up' ? '↑' : '→'
   const trendClass = `trend-${trend}`
+  const recoveryColor =
+    !recovery ? 'var(--text-muted)' : recovery.score >= 67 ? 'var(--green)' : recovery.score >= 34 ? 'var(--amber)' : 'var(--red)'
 
   return (
     <div className="page">
@@ -171,9 +176,9 @@ export function Home() {
           </div>
         </div>
         <div className="stat-chip">
-          <div className="label">Next</div>
-          <div className="num num-sm" style={{ fontSize: 16 }}>
-            {plan.targetMinutes ? plan.focus.split(' ')[0] : 'Rest'}
+          <div className="label">Recovery</div>
+          <div className="num num-sm" style={{ color: recoveryColor }}>
+            {recovery ? `${Math.round(recovery.score)}%` : '—'}
           </div>
         </div>
         <div className="stat-chip">

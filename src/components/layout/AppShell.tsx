@@ -7,7 +7,8 @@ import { QuickAddSheet } from './QuickAddSheet'
 export function AppShell() {
   const [quickOpen, setQuickOpen] = useState(false)
   const location = useLocation()
-  const hideChrome = location.pathname === '/profile'
+  const hideChrome =
+    location.pathname === '/profile' || location.pathname.startsWith('/whoop/')
   const { user, syncStatus } = useStore()
 
   return (

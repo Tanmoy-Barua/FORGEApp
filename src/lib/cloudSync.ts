@@ -21,6 +21,7 @@ const DOC_VERSION = 1
 export function stripPrivateLocalData(state: AppState): AppState {
   return {
     ...state,
+    recoveryEntries: state.recoveryEntries ?? [],
     progressPhotos: [],
     activeWorkoutId: null,
     activeSimId: null,
@@ -36,6 +37,7 @@ export function mergeCloudState(cloud: AppState, local: AppState): AppState {
     foodLibrary: cloud.foodLibrary?.length ? cloud.foodLibrary : base.foodLibrary,
     mealTemplates: cloud.mealTemplates?.length ? cloud.mealTemplates : base.mealTemplates,
     plan: cloud.plan?.length ? cloud.plan : base.plan,
+    recoveryEntries: cloud.recoveryEntries ?? local.recoveryEntries ?? [],
     // Keep private media on this device
     progressPhotos: local.progressPhotos,
     activeWorkoutId: local.activeWorkoutId,

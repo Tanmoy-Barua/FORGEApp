@@ -88,14 +88,27 @@ Custom domain (optional): Project → Settings → Domains.
 
 ---
 
+## Wearables
+
+### Whoop
+1. Create an app at [developer-dashboard.whoop.com](https://developer-dashboard.whoop.com)
+2. Set redirect URI to `https://YOUR_DOMAIN/whoop/callback`
+3. In FORGE **Settings → Wearables**, paste Client ID + Secret → **Connect Whoop** → **Sync**
+4. Deploy on **Vercel** so `/api/whoop-token` and `/api/whoop-proxy` can bypass browser CORS
+
+Pulls sleep, recovery (shown on Home), strain, and body weight. Requires an active Whoop membership.
+
+### Apple Health
+Web apps can’t read HealthKit live. On iPhone: **Health → profile → Export All Health Data** → unzip → import `export.xml` in Settings. Imports sleep, steps, and weight.
+
 ## What's in the app
 
-- **Home** — race countdown, today card, daily rings, streak, checklist, weight trend, heatmap
+- **Home** — race countdown, today card, daily rings, streak, checklist, recovery, weight trend, heatmap
 - **Train** — weekly plan, strength logger, running log, HYROX stations / simulation / readiness
 - **Fuel** — food library, meal templates, macro rings, water tracker
 - **Body** — weight, measurements, body comp, sleep, private photos
 - **＋ Quick log** — floating FAB
-- **Settings** — cloud sync, targets, JSON/CSV export
+- **Settings** — cloud sync, Whoop / Apple Health, targets, JSON/CSV export
 
 ## Design
 
