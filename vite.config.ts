@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { whoopDevProxy } from './whoopDevProxy.ts'
 
 const base = process.env.GITHUB_PAGES === 'true' ? '/FORGEApp/' : '/'
 
@@ -16,6 +17,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    whoopDevProxy(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
