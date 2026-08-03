@@ -274,7 +274,7 @@ export function Whoop() {
         <div className="whoop-hero">
           <div className="whoop-hero-top">
             <div>
-              <div className="whoop-kicker">FORGE</div>
+              <div className="whoop-kicker">fogerapp</div>
               <h1 className="page-title" style={{ marginBottom: 4 }}>
                 {name || 'Dashboard'}
               </h1>

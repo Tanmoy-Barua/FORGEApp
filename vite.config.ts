@@ -22,8 +22,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'FORGE',
-        short_name: 'FORGE',
+        name: 'fogerapp',
+        short_name: 'fogerapp',
         description: 'Train for the race. Track for life.',
         theme_color: '#0B0B0D',
         background_color: '#0B0B0D',

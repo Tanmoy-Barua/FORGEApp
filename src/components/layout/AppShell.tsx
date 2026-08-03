@@ -36,7 +36,7 @@ export function AppShell() {
         {!hideChrome && !isDesktop && (
           <header className="app-header mobile-only">
             <div className="brand">
-              FORGE<span>.</span>
+              fogerapp<span>.</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               {user && (

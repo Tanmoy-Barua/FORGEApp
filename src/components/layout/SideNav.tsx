@@ -10,7 +10,7 @@ export function SideNav({ onQuickAdd, userDot }: SideNavProps) {
   return (
     <aside className="side-nav" aria-label="Primary">
       <div className="side-nav-brand">
-        FORGE<span>.</span>
+        fogerapp<span>.</span>
         {userDot && (
           <span
             className={`side-nav-dot side-nav-dot-${userDot === 'idle' ? 'pending' : userDot}`}

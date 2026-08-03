@@ -14,7 +14,7 @@ function BootGate({ children }: { children: React.ReactNode }) {
   if (!ready) {
     return (
       <div className="boot">
-        <div className="brand">FORGE</div>
+        <div className="brand">fogerapp</div>
       </div>
     )
   }

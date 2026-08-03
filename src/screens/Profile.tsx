@@ -282,7 +282,7 @@ export function Profile() {
         </div>
       </div>
 
-      <p className="settings-footer">FORGE · Train for the race. Track for life.</p>
+      <p className="settings-footer">fogerapp · Train for the race. Track for life.</p>
     </div>
   )
 }
