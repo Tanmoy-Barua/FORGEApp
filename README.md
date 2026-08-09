@@ -6,12 +6,12 @@ A personal fitness OS built around one big goal (HYROX Anaheim) sitting on top o
 
 ## Live app
 
-**https://fogerapp.loca.lt**
+**https://calculator-statement-stereo-statutes.trycloudflare.com**
 
 Whoop OAuth redirect URI for this host:
 
 ```text
-https://fogerapp.loca.lt/whoop/callback
+https://calculator-statement-stereo-statutes.trycloudflare.com/whoop/callback
 ```
 
 ## Stack
