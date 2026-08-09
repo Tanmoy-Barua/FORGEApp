@@ -6,25 +6,28 @@ A personal fitness OS built around one big goal (HYROX Anaheim) sitting on top o
 
 ## Live app
 
-### Always-online (do this once — 1 minute)
+### Vercel (connected)
 
-The agent **cannot** finish Vercel deploy without your Vercel account login.
+GitHub → Vercel project: **[tanmoy-baruas-projects/forge-app](https://vercel.com/tanmoy-baruas-projects/forge-app)**
 
-1. Open **[Deploy fogerapp on Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FTanmoy-Barua%2FFORGEApp&project-name=fogerapp&repository-name=FORGEApp)**  
-   or go to [vercel.com/new](https://vercel.com/new) → import `Tanmoy-Barua/FORGEApp`
-2. Set **Project Name** to `fogerapp`
-3. Click **Deploy**
-4. Your permanent link will be: **https://fogerapp.vercel.app**
+Production domain:
 
-Then:
-- Whoop redirect URI → `https://fogerapp.vercel.app/whoop/callback`
-- Firebase Auth → Authorized domains → add `fogerapp.vercel.app`
+**https://forge-app.vercel.app**
 
-### Temporary demo tunnel (not permanent)
+> Right now this URL redirects to **Vercel SSO / Deployment Protection**, so the public internet cannot open the app until you turn protection off (or add a public domain).
 
-Current session tunnel (dies when this environment stops):
+**Make it publicly always-online (1 minute):**
+1. Open https://vercel.com/tanmoy-baruas-projects/forge-app/settings/deployment-protection  
+2. Set **Standard Protection** / **Vercel Authentication** to **Only Preview Deployments** (or Off)  
+3. Optional — rename project / add domain alias to `fogerapp`:  
+   Settings → General → Project Name = `fogerapp`  
+   or Settings → Domains → add `fogerapp.vercel.app`
+4. Whoop redirect URI → `https://forge-app.vercel.app/whoop/callback`  
+   (or `https://fogerapp.vercel.app/whoop/callback` after you add that domain)
+5. Firebase Auth → Authorized domains → add the same host
 
-**https://respected-proof-nurses-termination.trycloudflare.com**
+**Note:** `https://forgeapp.vercel.app` is a **different** Vercel project (not this fitness app).  
+`https://fogerapp.vercel.app` is not assigned yet (`DEPLOYMENT_NOT_FOUND`).
 
 ## Stack
 
