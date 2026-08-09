@@ -6,16 +6,25 @@ A personal fitness OS built around one big goal (HYROX Anaheim) sitting on top o
 
 ## Live app
 
-**Permanent (Vercel):** https://fogerapp.vercel.app  
-*(after the one-time Vercel deploy below)*
+### Always-online (do this once — 1 minute)
 
-Whoop OAuth redirect URI:
+The agent **cannot** finish Vercel deploy without your Vercel account login.
 
-```text
-https://fogerapp.vercel.app/whoop/callback
-```
+1. Open **[Deploy fogerapp on Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FTanmoy-Barua%2FFORGEApp&project-name=fogerapp&repository-name=FORGEApp)**  
+   or go to [vercel.com/new](https://vercel.com/new) → import `Tanmoy-Barua/FORGEApp`
+2. Set **Project Name** to `fogerapp`
+3. Click **Deploy**
+4. Your permanent link will be: **https://fogerapp.vercel.app**
 
-Temporary Cloudflare tunnels (e.g. `*.trycloudflare.com`) only work while that tunnel process is running and get a new random URL on every restart — they are **not** always-online.
+Then:
+- Whoop redirect URI → `https://fogerapp.vercel.app/whoop/callback`
+- Firebase Auth → Authorized domains → add `fogerapp.vercel.app`
+
+### Temporary demo tunnel (not permanent)
+
+Current session tunnel (dies when this environment stops):
+
+**https://respected-proof-nurses-termination.trycloudflare.com**
 
 ## Stack
 
