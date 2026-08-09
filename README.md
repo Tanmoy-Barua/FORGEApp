@@ -1,8 +1,29 @@
-# FORGE
+# fogerapp
 
 **Train for the race. Track for life.**
 
 A personal fitness OS built around one big goal (HYROX Anaheim) sitting on top of an everyday engine for strength, running, food, bodyweight, sleep, and habits. Mobile-first, offline-capable, one-handed logging between deliveries.
+
+## Live app
+
+**https://forge-app-lime.vercel.app**
+
+Whoop OAuth redirect URI:
+
+```text
+https://forge-app-lime.vercel.app/whoop/callback
+```
+
+Also add `forge-app-lime.vercel.app` under Firebase Auth → Authorized domains.
+
+Vercel project: [tanmoy-baruas-projects/forge-app](https://vercel.com/tanmoy-baruas-projects/forge-app)
+
+| Domain | Status |
+|--------|--------|
+| https://forge-app-lime.vercel.app | **Public production — working** |
+| https://forge-app.vercel.app | Deployed but SSO / Deployment Protection (login redirect) |
+| https://fogerapp.vercel.app | Not assigned (`DEPLOYMENT_NOT_FOUND`) |
+| https://forgeapp.vercel.app | Unrelated different project |
 
 ## Stack
 
@@ -62,29 +83,13 @@ Or paste `firestore.rules` in the console Rules tab.
 
 ## Vercel hosting
 
-### Option A — Import the GitHub repo
+Project: **[forge-app](https://vercel.com/tanmoy-baruas-projects/forge-app)**  
+Public URL: **https://forge-app-lime.vercel.app**
 
-1. Go to [vercel.com/new](https://vercel.com/new) → import `Tanmoy-Barua/FORGEApp`
-2. Framework: **Vite** (auto-detected). Output: `dist`
-3. Add the six `VITE_FIREBASE_*` env vars
-4. Deploy. SPA rewrites are in `vercel.json`.
+Optional env vars in Vercel → Settings → Environment Variables:
 
-### Option B — CLI
-
-```bash
-npx vercel login
-npx vercel          # preview
-npx vercel --prod   # production
-```
-
-Set env vars:
-
-```bash
-npx vercel env add VITE_FIREBASE_API_KEY
-# …repeat for each VITE_FIREBASE_* key
-```
-
-Custom domain (optional): Project → Settings → Domains.
+- `VITE_FIREBASE_*`
+- `VITE_WHOOP_CLIENT_ID` / `VITE_WHOOP_CLIENT_SECRET`
 
 ---
 
