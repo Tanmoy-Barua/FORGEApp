@@ -1,8 +1,18 @@
-# FORGE
+# fogerapp
 
 **Train for the race. Track for life.**
 
 A personal fitness OS built around one big goal (HYROX Anaheim) sitting on top of an everyday engine for strength, running, food, bodyweight, sleep, and habits. Mobile-first, offline-capable, one-handed logging between deliveries.
+
+## Live app
+
+**https://fogerapp.loca.lt**
+
+Whoop OAuth redirect URI for this host:
+
+```text
+https://fogerapp.loca.lt/whoop/callback
+```
 
 ## Stack
 
