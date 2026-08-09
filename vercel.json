@@ -1,4 +1,5 @@
 {
+  "name": "fogerapp",
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",

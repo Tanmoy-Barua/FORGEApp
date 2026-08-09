@@ -6,15 +6,16 @@ A personal fitness OS built around one big goal (HYROX Anaheim) sitting on top o
 
 ## Live app
 
-**https://genre-statutes-blacks-extended.trycloudflare.com**
+**Permanent (Vercel):** https://fogerapp.vercel.app  
+*(after the one-time Vercel deploy below)*
 
-Whoop OAuth redirect URI for this host:
+Whoop OAuth redirect URI:
 
 ```text
-https://genre-statutes-blacks-extended.trycloudflare.com/whoop/callback
+https://fogerapp.vercel.app/whoop/callback
 ```
 
-> Cloudflare quick tunnels get a **new random URL** whenever the tunnel restarts. The old `calculator-statement-stereo-statutes.trycloudflare.com` host is dead for that reason. For a permanent link, deploy to Vercel (see below).
+Temporary Cloudflare tunnels (e.g. `*.trycloudflare.com`) only work while that tunnel process is running and get a new random URL on every restart — they are **not** always-online.
 
 ## Stack
 
@@ -72,31 +73,38 @@ Or paste `firestore.rules` in the console Rules tab.
 
 ---
 
-## Vercel hosting
+## Vercel hosting (always-online link)
 
-### Option A — Import the GitHub repo
+Project name is set to **`fogerapp`** in `vercel.json`, so production should be:
+
+**https://fogerapp.vercel.app**
+
+### Option A — Import the GitHub repo (recommended)
 
 1. Go to [vercel.com/new](https://vercel.com/new) → import `Tanmoy-Barua/FORGEApp`
-2. Framework: **Vite** (auto-detected). Output: `dist`
-3. Add the six `VITE_FIREBASE_*` env vars
-4. Deploy. SPA rewrites are in `vercel.json`.
+2. Set **Project Name** to `fogerapp`
+3. Framework: **Vite** · Output: `dist`
+4. Root directory: repo root · Production branch: `main`
+5. Optional: add `VITE_FIREBASE_*` and `VITE_WHOOP_*` env vars
+6. Deploy
+7. In Whoop developer dashboard, set redirect URI to  
+   `https://fogerapp.vercel.app/whoop/callback`
+8. In Firebase Auth → Authorized domains, add `fogerapp.vercel.app`
 
 ### Option B — CLI
 
 ```bash
 npx vercel login
-npx vercel          # preview
-npx vercel --prod   # production
+npx vercel link --yes --project fogerapp
+npx vercel --prod --yes
 ```
 
-Set env vars:
+Set env vars (optional):
 
 ```bash
 npx vercel env add VITE_FIREBASE_API_KEY
-# …repeat for each VITE_FIREBASE_* key
+# …repeat for each VITE_FIREBASE_* / VITE_WHOOP_* key
 ```
-
-Custom domain (optional): Project → Settings → Domains.
 
 ---
 
