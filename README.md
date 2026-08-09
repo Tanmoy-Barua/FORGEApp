@@ -6,13 +6,15 @@ A personal fitness OS built around one big goal (HYROX Anaheim) sitting on top o
 
 ## Live app
 
-**https://calculator-statement-stereo-statutes.trycloudflare.com**
+**https://genre-statutes-blacks-extended.trycloudflare.com**
 
 Whoop OAuth redirect URI for this host:
 
 ```text
-https://calculator-statement-stereo-statutes.trycloudflare.com/whoop/callback
+https://genre-statutes-blacks-extended.trycloudflare.com/whoop/callback
 ```
+
+> Cloudflare quick tunnels get a **new random URL** whenever the tunnel restarts. The old `calculator-statement-stereo-statutes.trycloudflare.com` host is dead for that reason. For a permanent link, deploy to Vercel (see below).
 
 ## Stack
 
