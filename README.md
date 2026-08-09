@@ -6,28 +6,24 @@ A personal fitness OS built around one big goal (HYROX Anaheim) sitting on top o
 
 ## Live app
 
-### Vercel (connected)
+**https://forge-app-lime.vercel.app**
 
-GitHub → Vercel project: **[tanmoy-baruas-projects/forge-app](https://vercel.com/tanmoy-baruas-projects/forge-app)**
+Whoop OAuth redirect URI:
 
-Production domain:
+```text
+https://forge-app-lime.vercel.app/whoop/callback
+```
 
-**https://forge-app.vercel.app**
+Also add `forge-app-lime.vercel.app` under Firebase Auth → Authorized domains.
 
-> Right now this URL redirects to **Vercel SSO / Deployment Protection**, so the public internet cannot open the app until you turn protection off (or add a public domain).
+Vercel project: [tanmoy-baruas-projects/forge-app](https://vercel.com/tanmoy-baruas-projects/forge-app)
 
-**Make it publicly always-online (1 minute):**
-1. Open https://vercel.com/tanmoy-baruas-projects/forge-app/settings/deployment-protection  
-2. Set **Standard Protection** / **Vercel Authentication** to **Only Preview Deployments** (or Off)  
-3. Optional — rename project / add domain alias to `fogerapp`:  
-   Settings → General → Project Name = `fogerapp`  
-   or Settings → Domains → add `fogerapp.vercel.app`
-4. Whoop redirect URI → `https://forge-app.vercel.app/whoop/callback`  
-   (or `https://fogerapp.vercel.app/whoop/callback` after you add that domain)
-5. Firebase Auth → Authorized domains → add the same host
-
-**Note:** `https://forgeapp.vercel.app` is a **different** Vercel project (not this fitness app).  
-`https://fogerapp.vercel.app` is not assigned yet (`DEPLOYMENT_NOT_FOUND`).
+| Domain | Status |
+|--------|--------|
+| https://forge-app-lime.vercel.app | **Public production — working** |
+| https://forge-app.vercel.app | Deployed but SSO / Deployment Protection (login redirect) |
+| https://fogerapp.vercel.app | Not assigned (`DEPLOYMENT_NOT_FOUND`) |
+| https://forgeapp.vercel.app | Unrelated different project |
 
 ## Stack
 
@@ -85,38 +81,15 @@ Or paste `firestore.rules` in the console Rules tab.
 
 ---
 
-## Vercel hosting (always-online link)
+## Vercel hosting
 
-Project name is set to **`fogerapp`** in `vercel.json`, so production should be:
+Project: **[forge-app](https://vercel.com/tanmoy-baruas-projects/forge-app)**  
+Public URL: **https://forge-app-lime.vercel.app**
 
-**https://fogerapp.vercel.app**
+Optional env vars in Vercel → Settings → Environment Variables:
 
-### Option A — Import the GitHub repo (recommended)
-
-1. Go to [vercel.com/new](https://vercel.com/new) → import `Tanmoy-Barua/FORGEApp`
-2. Set **Project Name** to `fogerapp`
-3. Framework: **Vite** · Output: `dist`
-4. Root directory: repo root · Production branch: `main`
-5. Optional: add `VITE_FIREBASE_*` and `VITE_WHOOP_*` env vars
-6. Deploy
-7. In Whoop developer dashboard, set redirect URI to  
-   `https://fogerapp.vercel.app/whoop/callback`
-8. In Firebase Auth → Authorized domains, add `fogerapp.vercel.app`
-
-### Option B — CLI
-
-```bash
-npx vercel login
-npx vercel link --yes --project fogerapp
-npx vercel --prod --yes
-```
-
-Set env vars (optional):
-
-```bash
-npx vercel env add VITE_FIREBASE_API_KEY
-# …repeat for each VITE_FIREBASE_* / VITE_WHOOP_* key
-```
+- `VITE_FIREBASE_*`
+- `VITE_WHOOP_CLIENT_ID` / `VITE_WHOOP_CLIENT_SECRET`
 
 ---
 
